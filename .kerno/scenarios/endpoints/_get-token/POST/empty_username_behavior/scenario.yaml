@@ -1,0 +1,28 @@
+id: empty_username_behavior
+description: Request with empty string username to verify actual behavior (may accept
+  or reject)
+subject:
+  type: "Endpoint"
+  method: POST
+  path: /v1/get-token
+steps:
+- id: call_get_token_empty_username
+  description: Call POST /v1/get-token with empty string username
+  action:
+    type: "CallHttp"
+    request: |-
+      POST /v1/get-token HTTP/1.1
+      Content-Type: application/json
+
+      ""
+- id: assert_response
+  description: Assert actual response (200 with token or 400/422 validation error)
+  action:
+    type: "HttpAssert"
+    actual: '{{ call_get_token_empty_username }}'
+    expected: |-
+      HTTP/1.1 200 OK
+      Content-Type: application/json
+
+      {"access_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzA4MjQwNjIsInN1YiI6IiJ9.ACKW5t6V8eQFVnRfR3UHLzOkJVwMf7MeugHhKARKSGw","token_type":"bearer"}
+    body_match: json_lenient

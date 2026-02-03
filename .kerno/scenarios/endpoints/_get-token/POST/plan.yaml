@@ -1,0 +1,62 @@
+add:
+- id: valid_username_returns_token
+  description: Request with valid username returns 200 OK with JWT token
+  subject:
+    type: Endpoint
+    method: POST
+    path: /v1/get-token
+  steps:
+  - id: generate_test_data
+    description: Generate random username for test
+    action:
+      type: Values
+      outputs:
+        username:
+          type: RandomUuid
+  - id: call_get_token
+    description: Call POST /v1/get-token with valid username
+    action:
+      type: Unimplemented
+      intended_type: CallHttp
+  - id: assert_token_response
+    description: Assert 200 OK response with access_token and token_type bearer
+    action:
+      type: Unimplemented
+      intended_type: HttpAssert
+- id: missing_username_returns_validation_error
+  description: Request without username field returns 422 Unprocessable Entity
+  subject:
+    type: Endpoint
+    method: POST
+    path: /v1/get-token
+  steps:
+  - id: call_get_token_no_username
+    description: Call POST /v1/get-token without username in body
+    action:
+      type: Unimplemented
+      intended_type: CallHttp
+  - id: assert_validation_error
+    description: Assert 422 response indicating missing required field
+    action:
+      type: Unimplemented
+      intended_type: HttpAssert
+- id: empty_username_behavior
+  description: Request with empty string username to verify actual behavior (may accept
+    or reject)
+  subject:
+    type: Endpoint
+    method: POST
+    path: /v1/get-token
+  steps:
+  - id: call_get_token_empty_username
+    description: Call POST /v1/get-token with empty string username
+    action:
+      type: Unimplemented
+      intended_type: CallHttp
+  - id: assert_response
+    description: Assert actual response (200 with token or 400/422 validation error)
+    action:
+      type: Unimplemented
+      intended_type: HttpAssert
+check: []
+remove: []

@@ -1,0 +1,27 @@
+id: missing_username_returns_validation_error
+description: Request without username field returns 422 Unprocessable Entity
+subject:
+  type: "Endpoint"
+  method: POST
+  path: /v1/get-token
+steps:
+- id: call_get_token_no_username
+  description: Call POST /v1/get-token without username in body
+  action:
+    type: "CallHttp"
+    request: |-
+      POST /v1/get-token HTTP/1.1
+      Content-Type: application/json
+
+      {}
+- id: assert_validation_error
+  description: Assert 422 response indicating missing required field
+  action:
+    type: "HttpAssert"
+    actual: '{{ call_get_token_no_username }}'
+    expected: |-
+      HTTP/1.1 422 Unprocessable Entity
+      Content-Type: application/json
+
+      {"detail":[{"type":"string_type","loc":["body"],"msg":"Input should be a valid string","input":{}}]}
+    body_match: json_lenient

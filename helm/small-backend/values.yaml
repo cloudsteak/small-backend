@@ -1,0 +1,122 @@
+# Default values for small-backend.
+# This is a YAML-formatted file containing the default configuration for the small-backend chart.
+# These values are used by the templates in the helm/small-backend/templates directory.
+# You can override these values during installation using '--set' or a custom values file.
+
+# -- replicaCount: The number of replica pods to maintain for this deployment.
+# Increasing this number improves availability and distributed load handling.
+replicaCount: 1
+
+image:
+  # -- repository: The Docker image repository for the small-backend application.
+  # Ensure this matches the image name built from the project's Dockerfile.
+  repository: small-backend
+  # -- pullPolicy: Defines when the kubelet should attempt to pull the image.
+  # 'IfNotPresent' is usually used for local/cached images, 'Always' for remote registries.
+  pullPolicy: IfNotPresent
+  # -- tag: The image tag to use. Defaults to the "appVersion" defined in Chart.yaml if not set.
+  # It is recommended to use specific tags (hashes or versions) in production.
+  tag: "latest"
+
+# -- imagePullSecrets: A list of secret names used to authenticate with private registries.
+# Example: [{ name: "my-registry-secret" }]
+imagePullSecrets: []
+
+# -- nameOverride: Overrides the 'name' label used in resource names.
+nameOverride: ""
+
+# -- fullnameOverride: Completely overrides the generated name for all resources.
+# Useful if the auto-generated names (ReleaseName-ChartName) are too long.
+fullnameOverride: ""
+
+serviceAccount:
+  # -- create: Determines if a dedicated Kubernetes ServiceAccount should be created for this app.
+  # Using separate ServiceAccounts is a security best practice.
+  create: true
+  # -- annotations: Custom annotations to add to the ServiceAccount (e.g., for IAM role binding in AWS/GCP).
+  annotations: {}
+  # -- name: The name of the service account to use.
+  # If left empty and 'create' is true, a name is generated using the fullname template.
+  name: ""
+
+# -- podAnnotations: Dictionary of annotations to add to each pod in the deployment.
+# Common uses include Prometheus scrape configs or linkerd/istio sidecar settings.
+podAnnotations: {}
+
+# -- podSecurityContext: Defines privilege and access control settings for the pod.
+# Used for setting the effective UID/GID and filesystem group.
+podSecurityContext: {}
+  # fsGroup: 2000
+
+# -- securityContext: Defines security settings for the specific application container.
+# It is recommended to restrict capabilities and run as a non-root user in production.
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  # -- type: The type of Kubernetes Service to create.
+  # 'ClusterIP' for internal-only access; 'NodePort' or 'LoadBalancer' for external/direct access.
+  type: ClusterIP
+  # -- port: The port number exposed by the service.
+  # This is the port used by clients or load balancers to reach the application.
+  port: 80
+
+ingress:
+  # -- enabled: Set to true to create an Ingress resource for exposing the app to the internet.
+  enabled: false
+  # -- className: The name of the IngressClass controller (e.g., "nginx", "gce", "alb").
+  className: ""
+  # -- annotations: Additional metadata required by specific Ingress controllers (e.g., SSL redirection).
+  annotations: {}
+  # -- hosts: List of domain names and paths pointing to this service.
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  # -- tls: Configuration for HTTPS (SSL certificates).
+  # Requires a Kubernetes Secret containing the certificiate and private key.
+  tls: []
+
+resources:
+  # -- limits: The maximum amount of CPU/Memory a container is allowed to consume.
+  # This prevents a single pod from starving other workloads on the node.
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  # -- requests: The minimum amount of CPU/Memory guaranteed for the container.
+  # Kubernetes uses these values to decide which node to place the pod on.
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+autoscaling:
+  # -- enabled: If true, creates a HorizontalPodAutoscaler to dynamically adjust replica count.
+  enabled: false
+  # -- minReplicas: Minimum number of pods to keep running.
+  minReplicas: 1
+  # -- maxReplicas: Maximum number of pods the HPA can scale up to.
+  maxReplicas: 5
+  # -- targetCPUUtilizationPercentage: Target CPU load before triggerring a scale-up event.
+  targetCPUUtilizationPercentage: 80
+  # -- targetMemoryUtilizationPercentage: Target Memory load before triggerring a scale-up event.
+  # targetMemoryUtilizationPercentage: 80
+
+# -- nodeSelector: Constrain pods to nodes with specific labels (e.g., SSD storage, specific GPU).
+nodeSelector: {}
+
+# -- tolerations: Allow pods to be scheduled on nodes with specific taints.
+tolerations: []
+
+# -- affinity: More complex rules for pod placement across nodes or near/far other pods.
+affinity: {}
+
+environment:
+  # -- SECRET_KEY: The application-level secret used for JWT signing and other security features.
+  # CRITICAL: Do NOT use the default value in production. Update this via 'values.yaml' override or helm secrets.
+  SECRET_KEY: "dev-secret-key-change-me"

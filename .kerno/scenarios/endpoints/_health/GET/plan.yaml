@@ -1,0 +1,20 @@
+add:
+- id: health_check_returns_ok
+  description: Health check endpoint returns 200 OK with status ok
+  subject:
+    type: Endpoint
+    method: GET
+    path: /health
+  steps:
+  - id: call_health_endpoint
+    description: Call the health check endpoint without authentication
+    action:
+      type: Unimplemented
+      intended_type: CallHttp
+  - id: assert_health_response
+    description: Assert that the response is 200 OK with status ok
+    action:
+      type: Unimplemented
+      intended_type: HttpAssert
+check: []
+remove: []

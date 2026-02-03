@@ -1,0 +1,25 @@
+add:
+- id: get_version_returns_200_with_version_info
+  description: |
+    Verify that GET /version returns 200 OK with version and project name.
+    This endpoint is a utility endpoint that returns configuration data without
+    requiring authentication or authorization.
+  subject:
+    type: Endpoint
+    method: GET
+    path: /version
+  steps:
+  - id: call_version_endpoint
+    description: Call GET /version endpoint
+    action:
+      type: Unimplemented
+      intended_type: CallHttp
+  - id: assert_version_response
+    description: |
+      Assert that response is 200 OK with version and name fields.
+      The response should contain the VERSION and PROJECT_NAME from settings.
+    action:
+      type: Unimplemented
+      intended_type: HttpAssert
+check: []
+remove: []

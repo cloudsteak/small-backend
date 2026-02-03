@@ -1,0 +1,26 @@
+id: get_items_returns_list
+description: Verify GET /items/ returns list of items with 200 OK
+subject:
+  type: Endpoint
+  method: GET
+  path: /v1/items/
+steps:
+- id: call_get_items
+  description: Call GET /items/ endpoint
+  action:
+    type: CallHttp
+    request: GET /v1/items/ HTTP/1.1
+- id: assert_response
+  description: Assert 200 OK with list of items
+  action:
+    type: HttpAssert
+    actual: '{{ call_get_items }}'
+    expected: |-
+      HTTP/1.1 200 OK
+      Content-Type: application/json
+
+      [
+        {"id": 1, "title": "First Item", "description": "This is the first item"},
+        {"id": 2, "title": "Second Item", "description": "This is the second item"}
+      ]
+    body_match: json_lenient

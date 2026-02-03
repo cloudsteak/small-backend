@@ -1,0 +1,22 @@
+id: get_items_skip_beyond_available
+description: Verify GET /items/ with skip beyond available items returns empty list
+subject:
+  type: Endpoint
+  method: GET
+  path: /items/
+steps:
+- id: call_get_items_beyond
+  description: Call GET /items/ with skip=100
+  action:
+    type: CallHttp
+    request: GET /v1/items/?skip=100&limit=100 HTTP/1.1
+- id: assert_empty_response
+  description: Assert 200 OK with empty array
+  action:
+    type: HttpAssert
+    actual: '{{ call_get_items_beyond }}'
+    expected: |-
+      HTTP/1.1 200 OK
+      Content-Type: application/json
+
+      []

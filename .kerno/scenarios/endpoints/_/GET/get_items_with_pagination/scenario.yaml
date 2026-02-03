@@ -1,0 +1,22 @@
+id: get_items_with_pagination
+description: Verify GET /items/ respects skip and limit query parameters
+subject:
+  type: Endpoint
+  method: GET
+  path: /items/
+steps:
+- id: call_get_items_paginated
+  description: Call GET /items/ with skip=1 and limit=1
+  action:
+    type: CallHttp
+    request: GET /v1/items/?skip=1&limit=1 HTTP/1.1
+- id: assert_pagination_response
+  description: Assert 200 OK with single item (second item from mock data)
+  action:
+    type: HttpAssert
+    actual: '{{ call_get_items_paginated }}'
+    expected: |-
+      HTTP/1.1 200 OK
+      Content-Type: application/json
+
+      [{"id": 2, "title": "Second Item", "description": "This is the second item"}]
